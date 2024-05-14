@@ -2,7 +2,7 @@
 // Learn More: https://www.typescriptlang.org/docs/handbook/interfaces.html
 export interface SocialModel {
   id?: string;
-  eventDate: number;
+  eventDate: Date;
   eventDescription: string;
   eventImage: string;
   eventLocation: string;
