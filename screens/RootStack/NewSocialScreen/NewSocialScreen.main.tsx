@@ -92,7 +92,6 @@ export default function NewSocialScreen({ navigation }: Props) {
     date.setSeconds(0);
     setDate(date);
     hideDatePicker();
-    console.log(date);
   };
 
   // TODO: Follow the SnackBar Docs to implement the Snackbar component.
@@ -132,15 +131,17 @@ export default function NewSocialScreen({ navigation }: Props) {
       // (3) Construct & write the social model to the "socials" collection in Firestore.
       // The eventImage should be the downloadURL that we got from (3).
       // Make sure to do this using an async keyword.
+      const socialRef = collection(db, 'socials');
+      const docRef = doc(socialRef);
       const socialDoc: SocialModel = {
+        id: docRef.id,
         eventName: name,
         eventDate: date,
         eventLocation: location,
         eventDescription: description,
         eventImage: downloadURL,
       };
-      const socialRef = collection(db, 'socials');
-      await setDoc(doc(socialRef), socialDoc);
+      await setDoc(docRef, socialDoc);
       // (4) If nothing threw an error, then go back to the previous screen.
       //     Otherwise, show an error.
       navigation.goBack();

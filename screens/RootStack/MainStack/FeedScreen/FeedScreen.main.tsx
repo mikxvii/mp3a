@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { View, FlatList, Button} from "react-native";
+import { View, FlatList, Text} from "react-native";
 import { Appbar, Card } from "react-native-paper";
 import firebase from "firebase/app";
-import { getFirestore, doc, collection, setDoc, onSnapshot } from  "firebase/firestore";
+import { getFirestore, collection, onSnapshot, query, orderBy } from  "firebase/firestore";
 import { SocialModel } from "../../../../models/social.js";
 import { styles } from "./FeedScreen.styles";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -50,37 +50,31 @@ export default function FeedScreen({ navigation }: Props) {
   useEffect(
     () => {
       const db = getFirestore();
-      const unsub = onSnapshot(collection(db, "socials"),
-        (collection) => {
-          const tempSocialArray: SocialModel[] = [];
-          console.log("Current data: ", collection);
-          collection.forEach(
-            (docSnapshot) => {
-              tempSocialArray.push(docSnapshot);
-            });
-          setSocialModels(tempSocialArray);
-        });
-      return () => unsub();
-    }
+      const tempSocialArray: SocialModel[] = [];
+
+      const socialsQuery = query(collection(db, "socials"), orderBy("eventDate"));
+
+      const unsub = onSnapshot(socialsQuery, (collectionSnapshot) => {
+      collectionSnapshot.forEach((docSnapshot) => {
+        tempSocialArray.push(docSnapshot.data() as SocialModel)
+      });});
+      setSocialModels(tempSocialArray);
+      return (() => {
+        unsub();
+      });
+    },
+    []
   );
+
   
   const renderItem = ({ item }: { item: SocialModel }) => {
     // TODO: Return a Card corresponding to the social object passed in
     // to this function. On tapping this card, navigate to DetailScreen
     // and pass this social.
     return (
-      <Card>
-        <Card.Title title={item.eventName} subtitle={item.eventLocation}/>
-        <Card.Content>
-          {item.eventDescription}
-        </Card.Content>
+      <Card mode='outlined' onPress={() => navigation.navigate("DetailScreen", {social: item})} >
         <Card.Cover source={{ uri: item.eventImage}} />
-        {/* <Card.Actions>
-          <Button onPress={() => navigation.navigate("DetailScreen", {social: item})}>
-              Submit
-          </Button>
-          <Button>Ok</Button>
-        </Card.Actions> */}
+        <Card.Title title={item.eventName} subtitle={`${item.eventLocation} - ${item.eventDate.getUTCDay}-`}/>
       </Card>
     );
   };
@@ -95,15 +89,16 @@ export default function FeedScreen({ navigation }: Props) {
     );
   };
 
+  const keyExtractor = (item: SocialModel) => item.id;
+
   return (
     <>
       {NavigationBar()}
       <View style={styles.container}>
-        {/* Return a FlatList here. You'll need to use your renderItem method. */}
         <FlatList
           data={socialModels}
           renderItem={renderItem}
-          //keyExtractor={(item) => item.id}
+          keyExtractor={keyExtractor}
         />
       </View>
     </>
