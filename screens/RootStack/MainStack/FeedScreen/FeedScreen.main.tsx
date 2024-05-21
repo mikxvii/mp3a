@@ -74,7 +74,7 @@ export default function FeedScreen({ navigation }: Props) {
     return (
       <Card mode='outlined' onPress={() => navigation.navigate("DetailScreen", {social: item})} >
         <Card.Cover source={{ uri: item.eventImage}} />
-        <Card.Title title={item.eventName} subtitle={`${item.eventLocation} - ${item.eventDate.getUTCDay}-`}/>
+        <Card.Title title={item.eventName} subtitle={`${item.eventLocation}`}/>
       </Card>
     );
   };

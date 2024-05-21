@@ -13,6 +13,16 @@ interface Props {
 
 export default function DetailScreen({ route, navigation }: Props) {
   const { social } = route.params;
+  
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  };
 
   const Bar = () => {
     return (
@@ -36,7 +46,7 @@ export default function DetailScreen({ route, navigation }: Props) {
             {social.eventLocation}
           </Text>
           <Text style={{ ...styles.subtitle, marginTop: 5, marginBottom: 20 }}>
-            {new Date(social.eventDate).toLocaleString()}
+            {(social.eventDate).toLocaleString()}
           </Text>
           <Text style={styles.body}>{social.eventDescription}</Text>
         </View>
